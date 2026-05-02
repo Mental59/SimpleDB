@@ -29,6 +29,8 @@ target_include_directories(simpledb PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
 
+target_compile_definitions(simpledb PRIVATE _CRT_SECURE_NO_WARNINGS)
+
 target_compile_features(simpledb PRIVATE c_std_11)
 
 target_compile_options(simpledb PRIVATE

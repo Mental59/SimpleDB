@@ -5,7 +5,8 @@
 #include <defines.h>
 #include <input.h>
 #include <meta.h>
-#include <frontend.h>
+#include <statement.h>
+#include <table.h>
 
 static void print_prompt(void)
 {
@@ -14,6 +15,7 @@ static void print_prompt(void)
 
 BOOL repl_run(void)
 {
+  Table *table = new_table();
   InputBuffer *input_buffer = new_input_buffer();
 
   if (!input_buffer)
@@ -31,6 +33,7 @@ BOOL repl_run(void)
       switch (decode_meta_command(input_buffer->buffer))
       {
       case (META_COMMAND_EXIT):
+        free_table(table);
         free_input_buffer(input_buffer);
         return TRUE;
       case (META_COMMAND_UNRECOGNIZED):
@@ -42,14 +45,24 @@ BOOL repl_run(void)
     Statement statement;
     switch (prepare_statement(input_buffer->buffer, &statement))
     {
-    case (PREPARE_SUCCESS):
+    case PREPARE_SUCCESS:
       break;
+    case PREPARE_SYNTAX_ERROR:
+      printf("Syntax error. Could not parse statement.\n");
+      continue;
     case PREPARE_UNRECOGNIZED_STATEMENT:
       printf("Unrecognized keyword at start of '%s'.\n", input_buffer->buffer);
       continue;
     }
 
-    execute_statement(&statement);
-    printf("Executed.\n");
+    switch (execute_statement(&statement, table))
+    {
+    case (EXECUTE_SUCCESS):
+      printf("Executed.\n");
+      break;
+    case (EXECUTE_TABLE_FULL):
+      printf("Error: Table full.\n");
+      break;
+    }
   }
 }
