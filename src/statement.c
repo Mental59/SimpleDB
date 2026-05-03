@@ -1,35 +1,24 @@
 #include <string.h>
 #include <stdio.h>
 #include <inttypes.h>
+#include <stdlib.h>
 
 #include <statement.h>
 #include <input.h>
 #include <row.h>
 #include <defines.h>
+#include <utils.h>
 
 static void print_row(Row *row)
 {
-  printf("(%d, %s, %s)\n", row->id, row->username, row->email);
+  printf("(%u, %s, %s)\n", row->id, row->username, row->email);
 }
 
 PrepareResult prepare_statement(char *buffer, Statement *statement)
 {
   if (strncmp(buffer, "insert ", 7) == 0)
   {
-    statement->type = STATEMENT_INSERT;
-
-    Row *row = &statement->row_to_insert;
-    const char *format =
-        "insert %" SCNu32
-        " %" STR(USERNAME_MAX_CHARS) "s %" STR(EMAIL_MAX_CHARS) "s";
-    int args_assigned =
-        sscanf(buffer, format, &(row->id), row->username, row->email);
-    if (args_assigned < 3)
-    {
-      return PREPARE_SYNTAX_ERROR;
-    }
-
-    return PREPARE_SUCCESS;
+    return prepare_insert(buffer, statement);
   }
 
   if (strcmp(buffer, "select") == 0)
@@ -76,4 +65,56 @@ ExecuteResult execute_select(Statement *statement, Table *table)
     print_row(&row);
   }
   return EXECUTE_SUCCESS;
+}
+
+PrepareResult prepare_insert(char *buffer, Statement *statement)
+{
+  statement->type = STATEMENT_INSERT;
+
+  char *buffer_copy = malloc(strlen(buffer) + 1);
+  if (buffer_copy == NULL)
+  {
+    // TODO: log error
+    return PREPARE_FAILURE;
+  }
+
+  strcpy(buffer_copy, buffer);
+
+  char *cursor = buffer_copy;
+  const char *delims = " ";
+
+  next_token(&cursor, delims); // skip insert keyword
+  char *id_string = next_token(&cursor, delims);
+  char *username = next_token(&cursor, delims);
+  char *email = next_token(&cursor, delims);
+
+  if (id_string == NULL || username == NULL || email == NULL)
+  {
+    free(buffer_copy);
+    return PREPARE_SYNTAX_ERROR;
+  }
+
+  uint32_t id;
+  if (!parse_uint32(id_string, &id))
+  {
+    free(buffer_copy);
+    return PREPARE_INVALID_UINT32;
+  }
+  if (strlen(username) > COLUMN_USERNAME_SIZE)
+  {
+    free(buffer_copy);
+    return PREPARE_STRING_TOO_LONG;
+  }
+  if (strlen(email) > COLUMN_EMAIL_SIZE)
+  {
+    free(buffer_copy);
+    return PREPARE_STRING_TOO_LONG;
+  }
+
+  statement->row_to_insert.id = id;
+  strcpy(statement->row_to_insert.username, username);
+  strcpy(statement->row_to_insert.email, email);
+
+  free(buffer_copy);
+  return PREPARE_SUCCESS;
 }

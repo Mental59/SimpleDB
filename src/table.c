@@ -16,9 +16,12 @@ Table *new_table(void)
 
 void free_table(Table *table)
 {
-  for (int i = 0; table->pages[i] != NULL; i++)
+  for (uint32_t i = 0; i < TABLE_MAX_PAGES; i++)
   {
-    free(table->pages[i]);
+    if (table->pages[i] != NULL)
+    {
+      free(table->pages[i]);
+    }
   }
   free(table);
 }

@@ -37,3 +37,10 @@ target_compile_options(simpledb PRIVATE
     $<$<CONFIG:Debug>:-O0 -g -Wall -Wextra -Wpedantic>
     $<$<CONFIG:Release>:-O3 -DNDEBUG -Wall -Wextra -Wpedantic>
 )
+
+get_filename_component(SIMPLEDB_BUILD_ROOT "${CMAKE_BINARY_DIR}" DIRECTORY)
+
+add_custom_command(TARGET simpledb POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:simpledb> ${SIMPLEDB_BUILD_ROOT}/db
+    COMMENT "Copying executable to ${SIMPLEDB_BUILD_ROOT}/db"
+)

@@ -50,6 +50,15 @@ BOOL repl_run(void)
     case PREPARE_SYNTAX_ERROR:
       printf("Syntax error. Could not parse statement.\n");
       continue;
+    case PREPARE_STRING_TOO_LONG:
+      printf("String is too long.\n");
+      continue;
+    case PREPARE_INVALID_UINT32:
+      printf("Invalid uint32 value.\n");
+      continue;
+    case PREPARE_FAILURE:
+      printf("Unexpected error.\n");
+      continue;
     case PREPARE_UNRECOGNIZED_STATEMENT:
       printf("Unrecognized keyword at start of '%s'.\n", input_buffer->buffer);
       continue;

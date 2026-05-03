@@ -10,6 +10,9 @@ typedef enum
 {
   PREPARE_SUCCESS,
   PREPARE_SYNTAX_ERROR,
+  PREPARE_STRING_TOO_LONG,
+  PREPARE_INVALID_UINT32,
+  PREPARE_FAILURE,
   PREPARE_UNRECOGNIZED_STATEMENT
 } PrepareResult;
 
@@ -36,5 +39,7 @@ ExecuteResult execute_statement(Statement *statement, Table *table);
 
 ExecuteResult execute_insert(Statement *statement, Table *table);
 ExecuteResult execute_select(Statement *statement, Table *table);
+
+PrepareResult prepare_insert(char *buffer, Statement *statement);
 
 #endif
