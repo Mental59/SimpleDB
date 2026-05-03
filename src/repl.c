@@ -18,7 +18,7 @@ BOOL repl_run(void)
   Table *table = new_table();
   InputBuffer *input_buffer = new_input_buffer();
 
-  if (!input_buffer)
+  if (!input_buffer || !table)
   {
     return FALSE;
   }

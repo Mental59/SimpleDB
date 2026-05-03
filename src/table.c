@@ -6,11 +6,16 @@
 Table *new_table(void)
 {
   Table *table = (Table *)malloc(sizeof(Table));
-  table->num_rows = 0;
-  for (uint32_t i = 0; i < TABLE_MAX_PAGES; i++)
+
+  if (table)
   {
-    table->pages[i] = NULL;
+    table->num_rows = 0;
+    for (uint32_t i = 0; i < TABLE_MAX_PAGES; i++)
+    {
+      table->pages[i] = NULL;
+    }
   }
+
   return table;
 }
 
