@@ -6,9 +6,9 @@
 void serialize_row(Row *source, void *destination)
 {
   memcpy((char *)destination + ID_OFFSET, &(source->id), ID_SIZE);
-  memcpy((char *)destination + USERNAME_OFFSET, &(source->username),
-         USERNAME_SIZE);
-  memcpy((char *)destination + EMAIL_OFFSET, &(source->email), EMAIL_SIZE);
+  strncpy((char *)destination + USERNAME_OFFSET, source->username,
+          USERNAME_SIZE);
+  strncpy((char *)destination + EMAIL_OFFSET, source->email, EMAIL_SIZE);
 }
 
 void deserialize_row(void *source, Row *destination)

@@ -3,6 +3,6 @@
 
 #include <defines.h>
 
-BOOL repl_run(void);
+BOOL repl_run(const char *database_filename);
 
 #endif /* SIMPLEDB_REPL_H */

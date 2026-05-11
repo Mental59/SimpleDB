@@ -13,9 +13,9 @@ static void print_prompt(void)
   printf("db > ");
 }
 
-BOOL repl_run(void)
+BOOL repl_run(const char *database_filename)
 {
-  Table *table = new_table();
+  Table *table = db_open(database_filename);
   InputBuffer *input_buffer = new_input_buffer();
 
   if (!input_buffer || !table)
@@ -33,7 +33,7 @@ BOOL repl_run(void)
       switch (decode_meta_command(input_buffer->buffer))
       {
       case (META_COMMAND_EXIT):
-        free_table(table);
+        db_close(table);
         free_input_buffer(input_buffer);
         return TRUE;
       case (META_COMMAND_UNRECOGNIZED):
