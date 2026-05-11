@@ -28,6 +28,29 @@ def test_inserts_and_retrieves_a_row():
     ]
 
 
+def test_keeps_data_after_closing_connection():
+    result1 = run_script([
+        "insert 1 user1 person1@example.com",
+        ".exit",
+    ])
+
+    assert result1 == [
+        "db > Executed.",
+        "db > ",
+    ]
+
+    result2 = run_script([
+        "select",
+        ".exit",
+    ])
+
+    assert result2 == [
+        "db > (1, user1, person1@example.com)",
+        "Executed.",
+        "db > ",
+    ]
+
+
 def test_prints_error_message_when_table_is_full():
     script = [
         f"insert {i} user{i} person{i}@example.com"
