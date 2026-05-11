@@ -43,7 +43,7 @@ BOOL parse_uint32(const char *s, uint32_t *out)
   char *end;
   unsigned long value;
 
-  if (s == NULL || out == NULL)
+  if (s == NULL || out == NULL || strlen(s) == 0 || s[0] == '-')
   {
     return FALSE;
   }
