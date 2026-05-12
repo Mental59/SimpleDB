@@ -8,7 +8,7 @@
 #include <utils.h>
 #include <defines.h>
 
-char *next_token(char **cursor, const char *delims)
+char* next_token(char** cursor, const char* delims)
 {
   if (cursor == NULL || *cursor == NULL || delims == NULL)
   {
@@ -16,7 +16,7 @@ char *next_token(char **cursor, const char *delims)
   }
 
   // Skip leading delimiters
-  char *start = *cursor + strspn(*cursor, delims);
+  char* start = *cursor + strspn(*cursor, delims);
   if (*start == '\0')
   {
     *cursor = NULL;
@@ -24,7 +24,7 @@ char *next_token(char **cursor, const char *delims)
   }
 
   // Find end of token
-  char *end = start + strcspn(start, delims);
+  char* end = start + strcspn(start, delims);
   if (*end == '\0')
   {
     *cursor = NULL;
@@ -38,9 +38,9 @@ char *next_token(char **cursor, const char *delims)
   return start;
 }
 
-BOOL parse_uint32(const char *s, uint32_t *out)
+BOOL parse_uint32(const char* s, uint32_t* out)
 {
-  char *end;
+  char* end;
   unsigned long value;
 
   if (s == NULL || out == NULL || strlen(s) == 0 || s[0] == '-')

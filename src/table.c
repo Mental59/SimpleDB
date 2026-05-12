@@ -5,9 +5,9 @@
 
 #include <table.h>
 
-Table *db_open(const char *filename)
+Table* db_open(const char* filename)
 {
-  Pager *pager = pager_open(filename);
+  Pager* pager = pager_open(filename);
   if (!pager)
   {
     return NULL;
@@ -15,7 +15,7 @@ Table *db_open(const char *filename)
 
   uint32_t num_rows = pager->file_length / ROW_SIZE;
 
-  Table *table = (Table *)malloc(sizeof(Table));
+  Table* table = (Table*)malloc(sizeof(Table));
   if (!table)
   {
     free(pager);
@@ -28,9 +28,9 @@ Table *db_open(const char *filename)
   return table;
 }
 
-void db_close(Table *table)
+void db_close(Table* table)
 {
-  Pager *pager = table->pager;
+  Pager* pager = table->pager;
   uint32_t num_full_pages = table->num_rows / ROWS_PER_PAGE;
 
   for (uint32_t i = 0; i < num_full_pages; i++)
@@ -67,7 +67,7 @@ void db_close(Table *table)
 
   for (uint32_t i = 0; i < MAX_PAGES; i++)
   {
-    void *page = pager->pages[i];
+    void* page = pager->pages[i];
     if (page)
     {
       free(page);
@@ -79,10 +79,10 @@ void db_close(Table *table)
   free(table);
 }
 
-void *row_slot(Table *table, uint32_t row_num)
+void* row_slot(Table* table, uint32_t row_num)
 {
   uint32_t page_num = row_num / ROWS_PER_PAGE;
-  void *page = get_page(table->pager, page_num);
+  void* page = get_page(table->pager, page_num);
   if (!page)
   {
     printf("Failed to get row slot\n");
@@ -90,5 +90,5 @@ void *row_slot(Table *table, uint32_t row_num)
   }
   uint32_t row_offset = row_num % ROWS_PER_PAGE;
   uint32_t byte_offset = row_offset * ROW_SIZE;
-  return (char *)page + byte_offset;
+  return (char*)page + byte_offset;
 }

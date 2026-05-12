@@ -7,6 +7,6 @@ typedef enum
   META_COMMAND_UNRECOGNIZED
 } MetaCommandResult;
 
-MetaCommandResult decode_meta_command(char *command);
+MetaCommandResult decode_meta_command(char* command);
 
 #endif

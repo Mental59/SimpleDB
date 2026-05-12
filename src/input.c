@@ -6,9 +6,9 @@
 
 static size_t k_initial_buf_cap = 256;
 
-InputBuffer *new_input_buffer(void)
+InputBuffer* new_input_buffer(void)
 {
-  InputBuffer *input_buffer = (InputBuffer *)malloc(sizeof(InputBuffer));
+  InputBuffer* input_buffer = (InputBuffer*)malloc(sizeof(InputBuffer));
 
   if (input_buffer)
   {
@@ -20,7 +20,7 @@ InputBuffer *new_input_buffer(void)
   return input_buffer;
 }
 
-void free_input_buffer(InputBuffer *input_buffer)
+void free_input_buffer(InputBuffer* input_buffer)
 {
   if (input_buffer)
   {
@@ -29,7 +29,7 @@ void free_input_buffer(InputBuffer *input_buffer)
   }
 }
 
-long read_input_line(FILE *stream, char **out, size_t *capacity)
+long read_input_line(FILE* stream, char** out, size_t* capacity)
 {
   if (!stream || !out || !capacity)
   {
@@ -56,7 +56,7 @@ long read_input_line(FILE *stream, char **out, size_t *capacity)
     if (avail < 2)
     {
       size_t new_cap = *capacity * 2;
-      char *tmp = realloc(*out, new_cap);
+      char* tmp = realloc(*out, new_cap);
       if (!tmp)
       {
         return -1;
@@ -83,7 +83,7 @@ long read_input_line(FILE *stream, char **out, size_t *capacity)
   return (long)len;
 }
 
-void read_input(InputBuffer *input_buffer)
+void read_input(InputBuffer* input_buffer)
 {
   long bytes_read = read_input_line(stdin, &(input_buffer->buffer),
                                     &(input_buffer->buffer_length));

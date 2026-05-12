@@ -26,7 +26,7 @@ enum
   ROW_SIZE = ID_SIZE + USERNAME_SIZE + EMAIL_SIZE
 };
 
-void serialize_row(Row *source, void *destination);
-void deserialize_row(void *source, Row *destination);
+void serialize_row(Row* source, void* destination);
+void deserialize_row(void* source, Row* destination);
 
 #endif

@@ -8,7 +8,7 @@
 
 #include <pager.h>
 
-Pager *pager_open(const char *filename)
+Pager* pager_open(const char* filename)
 {
   int fd = open(filename, O_RDWR | O_CREAT, S_IWUSR | S_IRUSR);
 
@@ -18,7 +18,7 @@ Pager *pager_open(const char *filename)
     return NULL;
   }
 
-  Pager *pager = (Pager *)malloc(sizeof(Pager));
+  Pager* pager = (Pager*)malloc(sizeof(Pager));
   if (!pager)
   {
     printf("Failed to allocate pager\n");
@@ -36,7 +36,7 @@ Pager *pager_open(const char *filename)
   return pager;
 }
 
-void *get_page(Pager *pager, uint32_t page_num)
+void* get_page(Pager* pager, uint32_t page_num)
 {
   if (page_num > MAX_PAGES)
   {
@@ -48,7 +48,7 @@ void *get_page(Pager *pager, uint32_t page_num)
   if (pager->pages[page_num] == NULL)
   {
     // Cache miss. Allocate memory and load from file.
-    void *page = malloc(PAGE_SIZE);
+    void* page = malloc(PAGE_SIZE);
     if (!page)
     {
       printf("Failed to allocate page\n");
@@ -80,7 +80,7 @@ void *get_page(Pager *pager, uint32_t page_num)
   return pager->pages[page_num];
 }
 
-void pager_flush(Pager *pager, uint32_t page_num, uint32_t size)
+void pager_flush(Pager* pager, uint32_t page_num, uint32_t size)
 {
   if (pager->pages[page_num] == NULL)
   {

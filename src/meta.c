@@ -2,7 +2,7 @@
 
 #include <meta.h>
 
-MetaCommandResult decode_meta_command(char *command)
+MetaCommandResult decode_meta_command(char* command)
 {
   if (strcmp(command, ".exit") == 0)
   {

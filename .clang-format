@@ -3,4 +3,5 @@ BasedOnStyle: LLVM
 BreakBeforeBraces: Allman
 AllowShortFunctionsOnASingleLine: None
 SortIncludes: Never
+PointerAlignment: Left
 ...

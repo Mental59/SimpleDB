@@ -13,10 +13,10 @@ static void print_prompt(void)
   printf("db > ");
 }
 
-BOOL repl_run(const char *database_filename)
+BOOL repl_run(const char* database_filename)
 {
-  Table *table = db_open(database_filename);
-  InputBuffer *input_buffer = new_input_buffer();
+  Table* table = db_open(database_filename);
+  InputBuffer* input_buffer = new_input_buffer();
 
   if (!input_buffer || !table)
   {

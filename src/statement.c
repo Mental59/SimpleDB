@@ -9,12 +9,12 @@
 #include <defines.h>
 #include <utils.h>
 
-static void print_row(Row *row)
+static void print_row(Row* row)
 {
   printf("(%u, %s, %s)\n", row->id, row->username, row->email);
 }
 
-PrepareResult prepare_statement(char *buffer, Statement *statement)
+PrepareResult prepare_statement(char* buffer, Statement* statement)
 {
   if (strncmp(buffer, "insert ", 7) == 0)
   {
@@ -30,7 +30,7 @@ PrepareResult prepare_statement(char *buffer, Statement *statement)
   return PREPARE_UNRECOGNIZED_STATEMENT;
 }
 
-ExecuteResult execute_statement(Statement *statement, Table *table)
+ExecuteResult execute_statement(Statement* statement, Table* table)
 {
   switch (statement->type)
   {
@@ -41,14 +41,14 @@ ExecuteResult execute_statement(Statement *statement, Table *table)
   }
 }
 
-ExecuteResult execute_insert(Statement *statement, Table *table)
+ExecuteResult execute_insert(Statement* statement, Table* table)
 {
   if (table->num_rows >= TABLE_MAX_ROWS)
   {
     return EXECUTE_TABLE_FULL;
   }
 
-  Row *row_to_insert = &(statement->row_to_insert);
+  Row* row_to_insert = &(statement->row_to_insert);
 
   serialize_row(row_to_insert, row_slot(table, table->num_rows));
   table->num_rows += 1;
@@ -56,7 +56,7 @@ ExecuteResult execute_insert(Statement *statement, Table *table)
   return EXECUTE_SUCCESS;
 }
 
-ExecuteResult execute_select(Statement *statement, Table *table)
+ExecuteResult execute_select(Statement* statement, Table* table)
 {
   Row row;
   for (uint32_t i = 0; i < table->num_rows; i++)
@@ -67,11 +67,11 @@ ExecuteResult execute_select(Statement *statement, Table *table)
   return EXECUTE_SUCCESS;
 }
 
-PrepareResult prepare_insert(char *buffer, Statement *statement)
+PrepareResult prepare_insert(char* buffer, Statement* statement)
 {
   statement->type = STATEMENT_INSERT;
 
-  char *buffer_copy = malloc(strlen(buffer) + 1);
+  char* buffer_copy = malloc(strlen(buffer) + 1);
   if (buffer_copy == NULL)
   {
     // TODO: log error
@@ -80,13 +80,13 @@ PrepareResult prepare_insert(char *buffer, Statement *statement)
 
   strcpy(buffer_copy, buffer);
 
-  char *cursor = buffer_copy;
-  const char *delims = " ";
+  char* cursor = buffer_copy;
+  const char* delims = " ";
 
   next_token(&cursor, delims); // skip insert keyword
-  char *id_string = next_token(&cursor, delims);
-  char *username = next_token(&cursor, delims);
-  char *email = next_token(&cursor, delims);
+  char* id_string = next_token(&cursor, delims);
+  char* username = next_token(&cursor, delims);
+  char* email = next_token(&cursor, delims);
 
   if (id_string == NULL || username == NULL || email == NULL)
   {
