@@ -8,6 +8,7 @@
 #include <row.h>
 #include <defines.h>
 #include <utils.h>
+#include <cursor.h>
 
 static void print_row(Row* row)
 {
@@ -50,7 +51,10 @@ ExecuteResult execute_insert(Statement* statement, Table* table)
 
   Row* row_to_insert = &(statement->row_to_insert);
 
-  serialize_row(row_to_insert, row_slot(table, table->num_rows));
+  Cursor cursor;
+  init_table_end_cursor(table, &cursor);
+
+  serialize_row(row_to_insert, cursor_value(&cursor));
   table->num_rows += 1;
 
   return EXECUTE_SUCCESS;
@@ -59,11 +63,16 @@ ExecuteResult execute_insert(Statement* statement, Table* table)
 ExecuteResult execute_select(Statement* statement, Table* table)
 {
   Row row;
-  for (uint32_t i = 0; i < table->num_rows; i++)
+  Cursor cursor;
+
+  init_table_start_cursor(table, &cursor);
+
+  for (; !cursor.end_of_table; cursor_advance(&cursor))
   {
-    deserialize_row(row_slot(table, i), &row);
+    deserialize_row(cursor_value(&cursor), &row);
     print_row(&row);
   }
+
   return EXECUTE_SUCCESS;
 }
 
@@ -74,7 +83,8 @@ PrepareResult prepare_insert(char* buffer, Statement* statement)
   char* buffer_copy = malloc(strlen(buffer) + 1);
   if (buffer_copy == NULL)
   {
-    // TODO: log error
+    printf(
+        "Failed to prepare insert statement, buffer copy allocation failed\n");
     return PREPARE_FAILURE;
   }
 
