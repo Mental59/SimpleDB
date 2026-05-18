@@ -1,6 +1,3 @@
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/stat.h>
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
@@ -10,9 +7,13 @@
 
 Pager* pager_open(const char* filename)
 {
-  int fd = open(filename, O_RDWR | O_CREAT, S_IWUSR | S_IRUSR);
+  FILE* file = fopen(filename, "r+b");
+  if (file == NULL)
+  {
+    file = fopen(filename, "w+b");
+  }
 
-  if (fd == -1)
+  if (file == NULL)
   {
     printf("Unable to open pager file\n");
     return NULL;
@@ -22,11 +23,29 @@ Pager* pager_open(const char* filename)
   if (!pager)
   {
     printf("Failed to allocate pager\n");
+    fclose(file);
     return NULL;
   }
 
-  pager->file_descriptor = fd;
-  pager->file_length = lseek(fd, 0, SEEK_END);
+  pager->file = file;
+
+  if (fseek(file, 0, SEEK_END) != 0)
+  {
+    printf("Unable to find pager file length\n");
+    fclose(file);
+    free(pager);
+    return NULL;
+  }
+
+  long file_length = ftell(file);
+  if (file_length == -1)
+  {
+    printf("Unable to find pager file length\n");
+    fclose(file);
+    free(pager);
+    return NULL;
+  }
+  pager->file_length = (uint32_t)file_length;
 
   for (uint32_t i = 0; i < MAX_PAGES; i++)
   {
@@ -65,9 +84,14 @@ void* get_page(Pager* pager, uint32_t page_num)
 
     if (page_num <= num_pages)
     {
-      lseek(pager->file_descriptor, page_num * PAGE_SIZE, SEEK_SET);
-      ssize_t bytes_read = read(pager->file_descriptor, page, PAGE_SIZE);
-      if (bytes_read == -1)
+      if (fseek(pager->file, (long)(page_num * PAGE_SIZE), SEEK_SET) != 0)
+      {
+        printf("Error seeking: %d\n", errno);
+        exit(EXIT_FAILURE);
+      }
+
+      size_t bytes_read = fread(page, 1, PAGE_SIZE, pager->file);
+      if (bytes_read < PAGE_SIZE && ferror(pager->file))
       {
         printf("Error reading file: %d\n", errno);
         exit(EXIT_FAILURE);
@@ -88,18 +112,15 @@ void pager_flush(Pager* pager, uint32_t page_num, uint32_t size)
     exit(EXIT_FAILURE);
   }
 
-  off_t offset = lseek(pager->file_descriptor, page_num * PAGE_SIZE, SEEK_SET);
-
-  if (offset == -1)
+  if (fseek(pager->file, (long)(page_num * PAGE_SIZE), SEEK_SET) != 0)
   {
     printf("Error seeking: %d\n", errno);
     exit(EXIT_FAILURE);
   }
 
-  ssize_t bytes_written =
-      write(pager->file_descriptor, pager->pages[page_num], size);
+  size_t bytes_written = fwrite(pager->pages[page_num], 1, size, pager->file);
 
-  if (bytes_written == -1)
+  if (bytes_written < size)
   {
     printf("Error writing: %d\n", errno);
     exit(EXIT_FAILURE);

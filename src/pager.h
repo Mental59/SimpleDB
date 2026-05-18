@@ -2,6 +2,7 @@
 #define SIMPLEDB_PAGER_H
 
 #include <stdint.h>
+#include <stdio.h>
 
 #include <row.h>
 
@@ -15,7 +16,7 @@ enum
 
 typedef struct
 {
-  int file_descriptor;
+  FILE* file;
   uint32_t file_length;
   void* pages[MAX_PAGES];
 } Pager;

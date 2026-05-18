@@ -1,6 +1,5 @@
 #include <stdint.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <stdio.h>
 
 #include <table.h>
@@ -18,6 +17,7 @@ Table* db_open(const char* filename)
   Table* table = (Table*)malloc(sizeof(Table));
   if (!table)
   {
+    fclose(pager->file);
     free(pager);
     return NULL;
   }
@@ -58,7 +58,7 @@ void db_close(Table* table)
     }
   }
 
-  int result = close(pager->file_descriptor);
+  int result = fclose(pager->file);
   if (result == -1)
   {
     printf("Error closing db file.\n");

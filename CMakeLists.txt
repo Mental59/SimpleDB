@@ -39,8 +39,9 @@ target_compile_options(simpledb PRIVATE
 )
 
 get_filename_component(SIMPLEDB_BUILD_ROOT "${CMAKE_BINARY_DIR}" DIRECTORY)
+set(SIMPLEDB_COPIED_EXECUTABLE "${SIMPLEDB_BUILD_ROOT}/db$<$<BOOL:${WIN32}>:.exe>")
 
 add_custom_command(TARGET simpledb POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:simpledb> ${SIMPLEDB_BUILD_ROOT}/db
-    COMMENT "Copying executable to ${SIMPLEDB_BUILD_ROOT}/db"
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:simpledb> "${SIMPLEDB_COPIED_EXECUTABLE}"
+    COMMENT "Copying executable to ${SIMPLEDB_COPIED_EXECUTABLE}"
 )
