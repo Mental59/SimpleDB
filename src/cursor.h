@@ -1,13 +1,14 @@
 #ifndef SIMPLEDB_CURSOR_H
 #define SIMPLEDB_CURSOR_H
 
-#include <table.h>
+#include <db.h>
 #include <defines.h>
 
 typedef struct
 {
   Table* table;
-  uint32_t row_num;
+  uint32_t page_num;
+  uint32_t cell_num;
   BOOL end_of_table; // Indicates a position one past the last element
 } Cursor;
 

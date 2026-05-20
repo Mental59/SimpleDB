@@ -4,9 +4,9 @@
 
 #include <defines.h>
 #include <input.h>
-#include <meta.h>
+#include <metacommand.h>
 #include <statement.h>
-#include <table.h>
+#include <db.h>
 
 static void print_prompt(void)
 {
@@ -36,6 +36,12 @@ BOOL repl_run(const char* database_filename)
         db_close(table);
         free_input_buffer(input_buffer);
         return TRUE;
+      case (META_COMMAND_CONSTANTS):
+        print_constants();
+        continue;
+      case (META_COMMAND_BTREE):
+        print_leaf_node(get_page(table->pager, 0));
+        continue;
       case (META_COMMAND_UNRECOGNIZED):
         printf("Unrecognized command '%s'\n", input_buffer->buffer);
         continue;

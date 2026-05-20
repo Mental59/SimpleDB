@@ -38,6 +38,11 @@ Pager* pager_open(const char* filename)
   }
 
   long file_length = ftell(file);
+  if (file_length % PAGE_SIZE != 0)
+  {
+    printf("Db file is not a whole number of pages. Corrupt file.\n");
+    exit(EXIT_FAILURE);
+  }
   if (file_length == -1)
   {
     printf("Unable to find pager file length\n");
@@ -46,6 +51,7 @@ Pager* pager_open(const char* filename)
     return NULL;
   }
   pager->file_length = (uint32_t)file_length;
+  pager->num_pages = pager->file_length / PAGE_SIZE;
 
   for (uint32_t i = 0; i < MAX_PAGES; i++)
   {
@@ -74,7 +80,7 @@ void* get_page(Pager* pager, uint32_t page_num)
       exit(EXIT_FAILURE);
     }
 
-    uint32_t num_pages = pager->file_length / PAGE_SIZE;
+    uint32_t num_pages = pager->num_pages;
 
     // We might save a partial page at the end of the file
     if (pager->file_length % PAGE_SIZE)
@@ -96,6 +102,11 @@ void* get_page(Pager* pager, uint32_t page_num)
         printf("Error reading file: %d\n", errno);
         exit(EXIT_FAILURE);
       }
+
+      if (page_num >= pager->num_pages)
+      {
+        pager->num_pages = page_num + 1;
+      }
     }
 
     pager->pages[page_num] = page;
@@ -104,7 +115,7 @@ void* get_page(Pager* pager, uint32_t page_num)
   return pager->pages[page_num];
 }
 
-void pager_flush(Pager* pager, uint32_t page_num, uint32_t size)
+void pager_flush(Pager* pager, uint32_t page_num)
 {
   if (pager->pages[page_num] == NULL)
   {
@@ -118,9 +129,10 @@ void pager_flush(Pager* pager, uint32_t page_num, uint32_t size)
     exit(EXIT_FAILURE);
   }
 
-  size_t bytes_written = fwrite(pager->pages[page_num], 1, size, pager->file);
+  size_t bytes_written =
+      fwrite(pager->pages[page_num], 1, PAGE_SIZE, pager->file);
 
-  if (bytes_written < size)
+  if (bytes_written < PAGE_SIZE)
   {
     printf("Error writing: %d\n", errno);
     exit(EXIT_FAILURE);

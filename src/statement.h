@@ -4,7 +4,8 @@
 #include <stdint.h>
 
 #include <row.h>
-#include <table.h>
+#include <db.h>
+#include <cursor.h>
 
 typedef enum
 {
@@ -41,5 +42,7 @@ ExecuteResult execute_insert(Statement* statement, Table* table);
 ExecuteResult execute_select(Statement* statement, Table* table);
 
 PrepareResult prepare_insert(char* buffer, Statement* statement);
+
+void leaf_node_insert(Cursor* cursor, uint32_t key, Row* value);
 
 #endif
