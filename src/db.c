@@ -13,8 +13,6 @@ Table* db_open(const char* filename)
     return NULL;
   }
 
-  uint32_t num_rows = pager->file_length / ROW_SIZE;
-
   Table* table = (Table*)malloc(sizeof(Table));
   if (!table)
   {

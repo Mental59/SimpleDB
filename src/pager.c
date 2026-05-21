@@ -80,15 +80,7 @@ void* get_page(Pager* pager, uint32_t page_num)
       exit(EXIT_FAILURE);
     }
 
-    uint32_t num_pages = pager->num_pages;
-
-    // We might save a partial page at the end of the file
-    if (pager->file_length % PAGE_SIZE)
-    {
-      num_pages += 1;
-    }
-
-    if (page_num <= num_pages)
+    if (page_num <= pager->num_pages)
     {
       if (fseek(pager->file, (long)(page_num * PAGE_SIZE), SEEK_SET) != 0)
       {
