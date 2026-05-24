@@ -26,7 +26,8 @@ typedef enum
 typedef enum
 {
   EXECUTE_SUCCESS,
-  EXECUTE_TABLE_FULL
+  EXECUTE_TABLE_FULL,
+  EXECUTE_DUPLICATE_KEY
 } ExecuteResult;
 
 typedef struct
@@ -42,7 +43,5 @@ ExecuteResult execute_insert(Statement* statement, Table* table);
 ExecuteResult execute_select(Statement* statement, Table* table);
 
 PrepareResult prepare_insert(char* buffer, Statement* statement);
-
-void leaf_node_insert(Cursor* cursor, uint32_t key, Row* value);
 
 #endif

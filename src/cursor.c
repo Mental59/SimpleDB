@@ -5,32 +5,6 @@
 #include <cursor.h>
 #include <btree.h>
 
-Cursor* alloc_table_start_cursor(Table* table)
-{
-  Cursor* cursor = malloc(sizeof(Cursor));
-  if (!cursor)
-  {
-    return NULL;
-  }
-
-  init_table_start_cursor(table, cursor);
-
-  return cursor;
-}
-
-Cursor* alloc_table_end_cursor(Table* table)
-{
-  Cursor* cursor = malloc(sizeof(Cursor));
-  if (!cursor)
-  {
-    return NULL;
-  }
-
-  init_table_end_cursor(table, cursor);
-
-  return cursor;
-}
-
 void init_table_start_cursor(Table* table, Cursor* cursor)
 {
   cursor->table = table;
@@ -42,16 +16,21 @@ void init_table_start_cursor(Table* table, Cursor* cursor)
   cursor->end_of_table = (num_cells == 0);
 }
 
-void init_table_end_cursor(Table* table, Cursor* cursor)
+void init_table_find_cursor(Table* table, uint32_t key, Cursor* cursor)
 {
-  cursor->table = table;
-  cursor->page_num = table->root_page_num;
+  uint32_t root_page_num = table->root_page_num;
+  void* root_node = get_page(table->pager, root_page_num);
 
-  void* root_node = get_page(table->pager, table->root_page_num);
-  uint32_t num_cells = *leaf_node_num_cells(root_node);
-  cursor->cell_num = num_cells;
-
-  cursor->end_of_table = TRUE;
+  if (get_node_type(root_node) == NODE_LEAF)
+  {
+    leaf_node_find(table, root_page_num, key, cursor);
+    return;
+  }
+  else
+  {
+    printf("Need to implement searching an internal node\n");
+    exit(EXIT_FAILURE);
+  }
 }
 
 void* cursor_value(Cursor* cursor)

@@ -163,8 +163,26 @@ def test_allows_printing_out_the_structure_of_a_one_node_btree(database_filename
         "db > Executed.",
         "db > Tree:",
         "leaf (size 3)",
-        "  - 0 : 3",
-        "  - 1 : 1",
-        "  - 2 : 2",
+        "  - 0 : 1",
+        "  - 1 : 2",
+        "  - 2 : 3",
+        "db > ",
+    ]
+
+def test_prints_error_message_if_duplicate_id(database_filename):
+    script = [
+        "insert 1 user1 person1@example.com",
+        "insert 1 user1 person1@example.com",
+        "select",
+        ".exit",
+    ]
+
+    result = run_script(script, database_filename)
+
+    assert result == [
+        "db > Executed.",
+        "db > Error: Duplicate key.",
+        "db > (1, user1, person1@example.com)",
+        "Executed.",
         "db > ",
     ]
