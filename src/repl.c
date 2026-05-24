@@ -40,7 +40,7 @@ BOOL repl_run(const char* database_filename)
         print_constants();
         continue;
       case (META_COMMAND_BTREE):
-        print_leaf_node(get_page(table->pager, 0));
+        print_tree(table->pager, 0, 0);
         continue;
       case (META_COMMAND_UNRECOGNIZED):
         printf("Unrecognized command '%s'\n", input_buffer->buffer);

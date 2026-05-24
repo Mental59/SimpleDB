@@ -94,14 +94,14 @@ void* get_page(Pager* pager, uint32_t page_num)
         printf("Error reading file: %d\n", errno);
         exit(EXIT_FAILURE);
       }
-
-      if (page_num >= pager->num_pages)
-      {
-        pager->num_pages = page_num + 1;
-      }
     }
 
     pager->pages[page_num] = page;
+
+    if (page_num >= pager->num_pages)
+    {
+      pager->num_pages = page_num + 1;
+    }
   }
 
   return pager->pages[page_num];
@@ -129,4 +129,13 @@ void pager_flush(Pager* pager, uint32_t page_num)
     printf("Error writing: %d\n", errno);
     exit(EXIT_FAILURE);
   }
+}
+
+/*
+Until we start recycling free pages, new pages will always
+go onto the end of the database file
+*/
+uint32_t get_unused_page_num(Pager* pager)
+{
+  return pager->num_pages;
 }

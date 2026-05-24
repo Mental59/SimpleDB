@@ -24,12 +24,10 @@ void init_table_find_cursor(Table* table, uint32_t key, Cursor* cursor)
   if (get_node_type(root_node) == NODE_LEAF)
   {
     leaf_node_find(table, root_page_num, key, cursor);
-    return;
   }
   else
   {
-    printf("Need to implement searching an internal node\n");
-    exit(EXIT_FAILURE);
+    internal_node_find(table, root_page_num, key, cursor);
   }
 }
 
