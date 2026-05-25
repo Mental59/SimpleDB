@@ -7,13 +7,11 @@
 
 void init_table_start_cursor(Table* table, Cursor* cursor)
 {
-  cursor->table = table;
-  cursor->page_num = table->root_page_num;
-  cursor->cell_num = 0;
+  init_table_find_cursor(table, 0, cursor);
 
-  void* root_node = get_page(table->pager, table->root_page_num);
-  uint32_t num_cells = *leaf_node_num_cells(root_node);
-  cursor->end_of_table = (num_cells == 0);
+  void* node = get_page(table->pager, cursor->page_num);
+  uint32_t num_cells = *leaf_node_num_cells(node);
+  cursor->end_of_table = num_cells == 0;
 }
 
 void init_table_find_cursor(Table* table, uint32_t key, Cursor* cursor)
@@ -52,6 +50,15 @@ void cursor_advance(Cursor* cursor)
 
   if (++(cursor->cell_num) >= *leaf_node_num_cells(node))
   {
-    cursor->end_of_table = TRUE;
+    uint32_t next_page_num = *leaf_node_next_leaf(node);
+    if (next_page_num == 0)
+    {
+      cursor->end_of_table = TRUE;
+    }
+    else
+    {
+      cursor->page_num = next_page_num;
+      cursor->cell_num = 0;
+    }
   }
 }

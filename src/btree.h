@@ -36,6 +36,7 @@ void leaf_node_insert(Cursor* cursor, uint32_t key, Row* value);
 void leaf_node_find(Table* table, uint32_t page_num, uint32_t key,
                     Cursor* cursor);
 void leaf_node_split_and_insert(Cursor* cursor, uint32_t key, Row* value);
+uint32_t* leaf_node_next_leaf(void* node);
 
 void create_new_root(Table* table, uint32_t right_child_page_num);
 

@@ -33,6 +33,7 @@ void initialize_leaf_node(void* node)
   set_node_type(node, NODE_LEAF);
   set_node_root(node, FALSE);
   *leaf_node_num_cells(node) = 0;
+  *leaf_node_next_leaf(node) = 0; // 0 represents no sibling
 }
 
 void initialize_internal_node(void* node)
@@ -179,6 +180,8 @@ void leaf_node_split_and_insert(Cursor* cursor, uint32_t key, Row* value)
   uint32_t new_page_num = get_unused_page_num(cursor->table->pager);
   void* new_node = get_page(cursor->table->pager, new_page_num);
   initialize_leaf_node(new_node);
+  *leaf_node_next_leaf(new_node) = *leaf_node_next_leaf(old_node);
+  *leaf_node_next_leaf(old_node) = new_page_num;
 
   /*
   All existing keys plus new key should be divided
@@ -201,7 +204,9 @@ void leaf_node_split_and_insert(Cursor* cursor, uint32_t key, Row* value)
 
     if (i == (int32_t)cursor->cell_num)
     {
-      serialize_row(value, destination);
+      serialize_row(value,
+                    leaf_node_value(destination_node, index_within_node));
+      *leaf_node_key(destination_node, index_within_node) = key;
     }
     else if (i > (int32_t)cursor->cell_num)
     {
@@ -227,6 +232,11 @@ void leaf_node_split_and_insert(Cursor* cursor, uint32_t key, Row* value)
     printf("Need to implement updating parent after split\n");
     exit(EXIT_FAILURE);
   }
+}
+
+uint32_t* leaf_node_next_leaf(void* node)
+{
+  return (uint32_t*)((char*)node + LEAF_NODE_NEXT_LEAF_OFFSET);
 }
 
 void create_new_root(Table* table, uint32_t right_child_page_num)
